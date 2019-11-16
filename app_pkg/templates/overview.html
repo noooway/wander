@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="radio-date">
+      <input type="radio" name="timeperiod"
+             value="red" onclick="handleClick(this);"> Red
+      <input type="radio" name="timeperiod"
+             value="green" onclick="handleClick(this);"> Green
+      <input type="radio" name="timeperiod"
+             value="blue" onclick="handleClick(this);"
+             checked="checked"> Blue
+
+      <span style="float:right; width: 40%">
+        Country:
+        <select class="js-example-basic-multiple" name="states[]"
+                multiple="multiple" style="width: 80%" >
+          <option value="total">Total</option>
+          <option value="v1">v1</option>
+          <option value="v2">v2</option>
+          <option value="v3">v3</option>
+        </select>
+      </span>
+      <br>
+      <script>
+        function handleClick(radio_btn) {
+            jQuery.post(
+                '/overview/revenue',
+                {color: radio_btn.value}
+            ).done(function(response) {
+                console.log(response)
+                /*use Plotly.restyle instead of Plotly.newPlot*/
+                Plotly.newPlot("revenue", JSON.parse(response));
+            }).fail(function() {
+                console.log("Can't get data from the server")
+            })
+        }
+      </script>
+      <script>
+        $(document).ready(function() {
+            $('.js-example-basic-multiple').select2();
+        });
+      </script>
+    </div>
+
+
+    <h3>Revenue</h3>
+    <div id="revenue"></div>
+    <script>
+      Plotly.newPlot("revenue", {{plots.revenue | safe}});
+    </script>
+
+    <h3>Sales</h3>
+
+{% endblock %}
