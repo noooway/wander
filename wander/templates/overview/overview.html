@@ -1,55 +1,70 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div id="radio-date">
-      <input type="radio" name="timeperiod"
-             value="months" onclick="handleClick(this);"> Months
-      <input type="radio" name="timeperiod"
-             value="weeks" onclick="handleClick(this);"> Weeks
-      <input type="radio" name="timeperiod"
-             value="days" onclick="handleClick(this);"
-             checked="checked"> Days
+<div id="header">
+  <span>
+    <input type="radio" name="timeperiod"
+           value="months" onclick="handleClick(this);"> Months
+    <input type="radio" name="timeperiod"
+           value="weeks" onclick="handleClick(this);"> Weeks
+    <input type="radio" name="timeperiod"
+           value="days" onclick="handleClick(this);"
+           checked="checked"> Days
+  </span>
 
-      <span style="float:right">
-        Region:
-        <input type="checkbox" name="America"
-               value="america">America
-        <input type="checkbox" name="Europe"
-               value="europe">Europe
-        <input type="checkbox" name="Asia"
-               value="asia">Asia
-        <input type="checkbox" name="Total"
-               value="total" checked="checked">Total<br>
-      </span>
-      <br>
-      <script>
-        function handleClick(radio_btn) {
-            jQuery.post(
-                '/overview/revenue',
-                {color: radio_btn.value}
-            ).done(function(response) {
-                console.log(response)
-                /*use Plotly.restyle instead of Plotly.newPlot*/
-                Plotly.newPlot("revenue", JSON.parse(response));
-            }).fail(function() {
-                console.log("Can't get data from the server")
-            })
-        }
-      </script>
-    </div>
+  <span style="float:right">
+    Region:
+    <input type="checkbox" name="America"
+           value="america">America
+    <input type="checkbox" name="Europe"
+           value="europe">Europe
+    <input type="checkbox" name="Asia"
+           value="asia">Asia
+    <input type="checkbox" name="Total"
+           value="total" checked="checked">Total<br>
+  </span>
 
-    <div>
-      <!-- Use CSS instead of space-formatting -->
-      <br>
-      <br>
-      <br>
-    </div>
+  <script>
+    function handleClick(radio_btn) {
+        jQuery.post(
+            '/overview/revenue',
+            {color: radio_btn.value}
+        ).done(function(response) {
+            console.log(response)
+            /*use Plotly.restyle instead of Plotly.newPlot*/
+            Plotly.newPlot("revenue", JSON.parse(response));
+        }).fail(function() {
+            console.log("Can't get data from the server")
+        })
+    }
+  </script>
+</div>
 
-    <div id="revenue"></div>
-    <script>
-      Plotly.newPlot("revenue", {{plots.revenue | safe}});
-    </script>
+<div>
+  <!-- Use CSS instead of space-formatting -->
+  <br>
+  <br>
+  <br>
+</div>
 
-    <h3>Sales</h3>
+<div id="revenue"></div>
+<script>
+  Plotly.newPlot("revenue", {{plots.revenue | safe}});
+</script>
+
+<div>
+  <!-- Use CSS instead of space-formatting -->
+  <br>
+</div>
+
+<div>
+  <div id="regs" style="width:47%; float:left;"></div>
+  <div id="inst_to_reg_conv" style="width:47%; float:right;"></div>
+</div>
+<script>
+  Plotly.newPlot("regs", {{plots.regs | safe}});
+  Plotly.newPlot("inst_to_reg_conv", {{plots.inst_to_regs_conv | safe}});
+</script>
+
 
 {% endblock %}
