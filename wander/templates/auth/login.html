@@ -1,0 +1,21 @@
+{% extends 'auth_base.html' %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+  {% if g.user %}
+    <p>Logged in as {{ g.user['username'] }} </p>
+    <p><a href="{{ url_for('overview.overview') }}">Go to Dashboard</a></p>
+    <p><a href="{{ url_for('auth.logout') }}">Log Out</a></p>
+  {% else %}
+    <form method="post">
+      <label for="username">Username</label>
+      <input name="username" id="username" required>
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required>
+      <input type="submit" value="Log In">
+    </form>
+    <a href="{{ url_for('auth.register') }}">Create User</a>
+  {% endif %}
+{% endblock %}
