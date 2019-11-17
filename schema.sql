@@ -1,8 +1,0 @@
-DROP TABLE IF EXISTS user;
-
-CREATE TABLE user(
-       id INTEGER PRIMARY KEY AUTOINCREMENT,
-       username NCHAR(64) UNIQUE NOT NULL,
-       email NCHAR(120) UNIQUE NOT NULL,
-       password_hash NCHAR(128) NOT NULL
-);
