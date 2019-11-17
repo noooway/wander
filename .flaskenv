@@ -1,3 +1,2 @@
-FLASK_APP=dashboard.py
-FLASK_DEBUG=1
-TEMPLATES_AUTO_RELOAD=1
+FLASK_APP=wander
+FLASK_ENV=development

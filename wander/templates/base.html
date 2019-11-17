@@ -1,27 +1,21 @@
 <html>
     <head>
-      {% if title %}
-      <title>{{ title }} - Dashboard</title>
-      {% else %}
-      <title>Welcome to Dashboard</title>
-      {% endif %}
+      <title>Dashboard</title>
       <link rel= "stylesheet" type= "text/css"
             href= "{{ url_for('static',filename='sidebar.css') }}">
+
       <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-
-      <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
-      <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
     </head>
     <body>
       <div class="sidenav">
-        <a href="{{ url_for('overview') }}">Overview</a>
+        <a href="{{ url_for('overview.overview') }}">Overview</a>
         <span style="padding: 6px 8px 6px 16px; display: block;">Monitoring</span>
         <span style="padding: 6px 8px 6px 16px; display: block;">Conversions</span>
         <span style="padding: 6px 8px 6px 16px; display: block;">Retention</span>
         <span style="padding: 6px 8px 6px 16px; display: block;">A/B Tests</span>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <span style="padding: 6px 8px 6px 16px; display: block;">Releases</span>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
       </div>
         <div class="main">
 
