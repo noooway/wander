@@ -22,9 +22,19 @@ def overview():
     revenue_json = revenue_plot()
     regs_json = regs_plot()
     inst_to_regs_conv_json = inst_to_regs_conv_plot()
+    #todo
+    first_sales_json = regs_plot()
+    regs_to_first_sale_conv_json = inst_to_regs_conv_plot()
+    sales_json = regs_plot()
+    first_sale_to_second_sale_conv_json = inst_to_regs_conv_plot()
+
     plots = {'revenue': revenue_json,
              'regs': regs_json,
-             'inst_to_regs_conv': inst_to_regs_conv_json}
+             'inst_to_regs_conv': inst_to_regs_conv_json,
+             'first_sales': first_sales_json,
+             'regs_to_first_sales_conv': regs_to_first_sale_conv_json,
+             'sales': sales_json,
+             'first_sale_to_second_sale_conv': first_sale_to_second_sale_conv_json}
     return render_template('overview/overview.html',
                            title='Overview',
                            plots=plots)
@@ -41,6 +51,7 @@ def revenue_plot():
                   title="Revenue",
                   labels=dict(date="Date", revenue="Revenue, $"))
     fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=0.8))
+    fig.update_traces(mode='markers+lines')
     #fig.update_layout(width=800)
     return fig.to_json()
 
