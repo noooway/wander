@@ -10,7 +10,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 
-from . import example_data
+# import when project is started with 'flask run' from top-level dir
+from example_data import example_data
 
 bp = Blueprint('overview', __name__)
 
