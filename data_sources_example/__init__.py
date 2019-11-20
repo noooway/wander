@@ -15,8 +15,9 @@ def register_dataframes(app):
     app.data_sources['first_sales'] = example_data.first_sales_df
     app.data_sources['regs_to_first_sales_conv'] = \
         example_data.regs_to_first_sales_conv_df
-    app.data_sources['sales'] = example_data.revenue_df
-    app.data_sources['first_sale_to_second_sale_conv'] = example_data.revenue_df
+    app.data_sources['sales'] = example_data.sales_df
+    app.data_sources['first_sales_to_second_sales_conv'] = \
+        example_data.first_sales_to_second_sales_conv_df
 
 
 def import_csv(app):

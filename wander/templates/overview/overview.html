@@ -79,12 +79,12 @@
 
 <div>
   <div id="sales" style="width:47%; float:left;"></div>
-  <div id="first_sale_to_second_sale_conv" style="width:47%; float:right;"></div>
+  <div id="first_sales_to_second_sales_conv" style="width:47%; float:right;"></div>
 </div>
 <script>
-  Plotly.newPlot("sales", {{plots.regs | safe}});
-  Plotly.newPlot("first_sale_to_second_sale_conv",
-                 {{plots.first_sale_to_second_sale_conv | safe}});
+  Plotly.newPlot("sales", {{plots.sales | safe}});
+  Plotly.newPlot("first_sales_to_second_sales_conv",
+                 {{plots.first_sales_to_second_sales_conv | safe}});
 </script>
 
 

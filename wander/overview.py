@@ -23,17 +23,17 @@ def overview():
     inst_to_regs_conv_json = inst_to_regs_conv_plot()
     first_sales_json = first_sales_plot()
     regs_to_first_sales_conv_json = regs_to_first_sales_conv_plot()
-    #todo
-    sales_json = regs_plot()
-    first_sale_to_second_sale_conv_json = inst_to_regs_conv_plot()
-
-    plots = {'revenue': revenue_json,
-             'regs': regs_json,
-             'inst_to_regs_conv': inst_to_regs_conv_json,
-             'first_sales': first_sales_json,
-             'regs_to_first_sales_conv': regs_to_first_sales_conv_json,
-             'sales': sales_json,
-             'first_sale_to_second_sale_conv': first_sale_to_second_sale_conv_json}
+    sales_json = sales_plot()
+    first_sales_to_second_sales_conv_json = first_sales_to_second_sales_conv_plot()
+    #
+    plots = {
+        'revenue': revenue_json,
+        'regs': regs_json,
+        'inst_to_regs_conv': inst_to_regs_conv_json,
+        'first_sales': first_sales_json,
+        'regs_to_first_sales_conv': regs_to_first_sales_conv_json,
+        'sales': sales_json,
+        'first_sales_to_second_sales_conv': first_sales_to_second_sales_conv_json}
     return render_template('overview/overview.html',
                            title='Overview',
                            plots=plots)
@@ -100,6 +100,33 @@ def regs_to_first_sales_conv_plot():
     fig.update_layout(yaxis=dict(tickformat=',.0%',))
     fig.update_traces(mode='markers+lines')
     return fig.to_json()
+
+
+@bp.route('/overview/sales', methods=['POST'])
+@login_required
+def sales_plot():
+    fig = px.line(current_app.data_sources['sales'],
+                  x="date", y="sales",
+                  title="Sales",
+                  labels=dict(date="Date", sales="Sales"))
+    fig.update_traces(mode='markers+lines')
+    return fig.to_json()
+
+
+@bp.route('/overview/first_sales_to_second_sales_conv', methods=['POST'])
+@login_required
+def first_sales_to_second_sales_conv_plot():
+    fig = px.line(current_app.data_sources['first_sales_to_second_sales_conv'],
+                  x="date", y="first_sales_to_second_sales_conv",
+                  title="First Sales to Second Sales Conversion",
+                  labels=dict(date="Date",
+                              first_sales_to_second_sales_conv="Conversion, %"))
+    fig.update_layout(yaxis=dict(tickformat=',.0%',))
+    fig.update_traces(mode='markers+lines')
+    return fig.to_json()
+
+
+
 
 # def revenue_plot():
 #     default_count = 500

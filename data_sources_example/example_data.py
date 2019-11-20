@@ -63,3 +63,36 @@ regs_to_first_sales_conv_df = pd.DataFrame(
     list(zip(datelist,
              first_sales_df["first_sales"] / regs_df["regs"])),
     columns=["date","regs_to_first_sales_conv"])
+
+
+
+
+
+# TODO: Should be step instead of linear
+# inst_to_regs = inst_to_regs_start + k * x
+# daily_conv = inst_to_regs +- 10%
+sales_start = 80
+sales_end = 100
+n_points = len(datelist)
+k = (sales_end - sales_start) / n_points
+av_sales = [sales_start + k * x for x in range(n_points)]
+daily_sales = [x + int(np.random.uniform(-0.15 * x, 0.15 * x)) for x in av_sales]
+sales = pd.Series(daily_sales)
+sales_df = pd.DataFrame(list(zip(datelist, sales)), columns=["date","sales"])
+
+
+
+
+second_sales_start = 10
+second_sales_end = 20
+n_points = len(datelist)
+k = (second_sales_end - second_sales_start) / n_points
+av_second_sales = [second_sales_start + k * x for x in range(n_points)]
+daily_conv = [x + int(np.random.uniform(-0.1 * x, 0.1 * x)) for x in av_second_sales]
+second_sales = pd.Series(daily_conv)
+second_sales_df = pd.DataFrame(list(zip(datelist, second_sales)),
+                                   columns=["date", "second_sales"])
+first_sales_to_second_sales_conv_df = pd.DataFrame(
+    list(zip(datelist,
+             second_sales_df["second_sales"] / first_sales_df["first_sales"])),
+    columns=["date", "first_sales_to_second_sales_conv"])
