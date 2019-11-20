@@ -43,3 +43,23 @@ daily_conv = [x + np.random.uniform(-0.1 * x, 0.1 * x) for x in av_inst_to_regs]
 inst_to_regs = pd.Series(daily_conv)
 inst_to_regs_conv_df = pd.DataFrame(list(zip(datelist, inst_to_regs)),
                                     columns=["date","inst_to_regs_conv"])
+
+
+# TODO: Should be step instead of linear
+# inst_to_regs = inst_to_regs_start + k * x
+# daily_conv = inst_to_regs +- 10%
+first_sales_start = 30
+first_sales_end = 60
+n_points = len(datelist)
+k = (first_sales_end - first_sales_start) / n_points
+av_first_sales = [first_sales_start + k * x for x in range(n_points)]
+daily_conv = [x + int(np.random.uniform(-0.1 * x, 0.1 * x)) for x in av_first_sales]
+first_sales = pd.Series(daily_conv)
+first_sales_df = pd.DataFrame(list(zip(datelist, first_sales)),
+                                   columns=["date","first_sales"])
+
+
+regs_to_first_sales_conv_df = pd.DataFrame(
+    list(zip(datelist,
+             first_sales_df["first_sales"] / regs_df["regs"])),
+    columns=["date","regs_to_first_sales_conv"])

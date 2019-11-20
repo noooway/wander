@@ -21,9 +21,9 @@ def overview():
     revenue_json = revenue_plot()
     regs_json = regs_plot()
     inst_to_regs_conv_json = inst_to_regs_conv_plot()
+    first_sales_json = first_sales_plot()
+    regs_to_first_sales_conv_json = regs_to_first_sales_conv_plot()
     #todo
-    first_sales_json = regs_plot()
-    regs_to_first_sale_conv_json = inst_to_regs_conv_plot()
     sales_json = regs_plot()
     first_sale_to_second_sale_conv_json = inst_to_regs_conv_plot()
 
@@ -31,7 +31,7 @@ def overview():
              'regs': regs_json,
              'inst_to_regs_conv': inst_to_regs_conv_json,
              'first_sales': first_sales_json,
-             'regs_to_first_sales_conv': regs_to_first_sale_conv_json,
+             'regs_to_first_sales_conv': regs_to_first_sales_conv_json,
              'sales': sales_json,
              'first_sale_to_second_sale_conv': first_sale_to_second_sale_conv_json}
     return render_template('overview/overview.html',
@@ -61,6 +61,7 @@ def regs_plot():
     fig = px.line(current_app.data_sources['regs'], x="date", y="regs",
                   title="Registrations",
                   labels=dict(date="Date", regs="Registrations"))
+    fig.update_traces(mode='markers+lines')
     return fig.to_json()
 
 
@@ -73,9 +74,32 @@ def inst_to_regs_conv_plot():
                   labels=dict(date="Date",
                               inst_to_regs_conv="Conversion, %"))
     fig.update_layout(yaxis=dict(tickformat=',.0%',))
+    fig.update_traces(mode='markers+lines')
     return fig.to_json()
 
 
+@bp.route('/overview/first_sales', methods=['POST'])
+@login_required
+def first_sales_plot():
+    fig = px.line(current_app.data_sources['first_sales'],
+                  x="date", y="first_sales",
+                  title="First Sales",
+                  labels=dict(date="Date", first_sales="First Sales"))
+    fig.update_traces(mode='markers+lines')
+    return fig.to_json()
+
+
+@bp.route('/overview/regs_to_first_sales_conv', methods=['POST'])
+@login_required
+def regs_to_first_sales_conv_plot():
+    fig = px.line(current_app.data_sources['regs_to_first_sales_conv'],
+                  x="date", y="regs_to_first_sales_conv",
+                  title="Regs to First Sales Conversion",
+                  labels=dict(date="Date",
+                              regs_to_first_sales_conv="Conversion, %"))
+    fig.update_layout(yaxis=dict(tickformat=',.0%',))
+    fig.update_traces(mode='markers+lines')
+    return fig.to_json()
 
 # def revenue_plot():
 #     default_count = 500
