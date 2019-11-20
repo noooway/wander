@@ -42,10 +42,9 @@ def overview():
 @bp.route('/overview/revenue', methods=['POST'])
 @login_required
 def revenue_plot():
-    default_count = 500
-    default_color = 'orange'
-    count = request.form.get('count', default_count)
-    col = request.form.get('color', default_color)
+    default_time_period = 'weeks'
+    timeperiod = request.form.get('time_period', default_time_period)
+    print(timeperiod)
     fig = px.line(current_app.data_sources['revenue'], x="date", y="revenue",
                   title="Revenue",
                   labels=dict(date="Date", revenue="Revenue, $"))

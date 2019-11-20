@@ -4,12 +4,12 @@
 <div id="header">
   <span>
     <input type="radio" name="timeperiod"
-           value="months" onclick="handleClick(this);"> Months
+           value="months" onclick="set_time_period(this);"> Months
     <input type="radio" name="timeperiod"
-           value="weeks" onclick="handleClick(this);"> Weeks
+           value="weeks" onclick="set_time_period(this);"
+           checked="checked"> Weeks
     <input type="radio" name="timeperiod"
-           value="days" onclick="handleClick(this);"
-           checked="checked"> Days
+           value="days" onclick="set_time_period(this);"> Days
   </span>
 
   <span style="float:right">
@@ -25,17 +25,26 @@
   </span>
 
   <script>
-    function handleClick(radio_btn) {
-        jQuery.post(
-            '/overview/revenue',
-            {color: radio_btn.value}
-        ).done(function(response) {
-            console.log(response)
-            /*use Plotly.restyle instead of Plotly.newPlot*/
-            Plotly.newPlot("revenue", JSON.parse(response));
-        }).fail(function() {
-            console.log("Can't get data from the server")
-        })
+    /* todo: get divs automatically */
+    var plots = ["revenue", "regs", "inst_to_regs_conv",
+                 "first_sales", "regs_to_first_sales_conv",
+                 "sales", "first_sales_to_second_sales_conv"];
+
+    function set_time_period(radio_btn) {
+        for(let i = 0; i < plots.length; i++){
+            plot_endpoint_and_div = plots[i];
+
+            jQuery.post(
+                '/overview/' + plot_endpoint_and_div,
+                {time_period: radio_btn.value}
+            ).done(function(response) {
+                console.log(response)
+                /*use Plotly.restyle instead of Plotly.newPlot*/
+                Plotly.newPlot(plot_endpoint_and_div, JSON.parse(response));
+            }).fail(function() {
+                console.log("Can't get data from the server")
+            })
+        }
     }
   </script>
 </div>
@@ -59,11 +68,11 @@
 
 <div>
   <div id="regs" style="width:47%; float:left;"></div>
-  <div id="inst_to_reg_conv" style="width:47%; float:right;"></div>
+  <div id="inst_to_regs_conv" style="width:47%; float:right;"></div>
 </div>
 <script>
   Plotly.newPlot("regs", {{plots.regs | safe}});
-  Plotly.newPlot("inst_to_reg_conv", {{plots.inst_to_regs_conv | safe}});
+  Plotly.newPlot("inst_to_regs_conv", {{plots.inst_to_regs_conv | safe}});
 </script>
 
 <div>
