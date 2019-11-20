@@ -66,5 +66,26 @@
   Plotly.newPlot("inst_to_reg_conv", {{plots.inst_to_regs_conv | safe}});
 </script>
 
+<div>
+  <div id="first_sales" style="width:47%; float:left;"></div>
+  <div id="regs_to_first_sales_conv" style="width:47%; float:right;"></div>
+</div>
+<script>
+  Plotly.newPlot("first_sales",
+                 {{plots.first_sales | safe}});
+  Plotly.newPlot("regs_to_first_sales_conv",
+                 {{plots.regs_to_first_sales_conv | safe}});
+</script>
+
+<div>
+  <div id="sales" style="width:47%; float:left;"></div>
+  <div id="first_sales_to_second_sales_conv" style="width:47%; float:right;"></div>
+</div>
+<script>
+  Plotly.newPlot("sales", {{plots.sales | safe}});
+  Plotly.newPlot("first_sales_to_second_sales_conv",
+                 {{plots.first_sales_to_second_sales_conv | safe}});
+</script>
+
 
 {% endblock %}
