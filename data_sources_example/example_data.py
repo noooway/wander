@@ -51,8 +51,10 @@ k = (inst_to_regs_end - inst_to_regs_start) / n_points
 av_inst_to_regs = [inst_to_regs_start + k * x for x in range(n_points)]
 daily_conv = [x + np.random.uniform(-0.1 * x, 0.1 * x) for x in av_inst_to_regs]
 inst_to_regs = pd.Series(daily_conv)
-inst_to_regs_conv_df = pd.DataFrame(list(zip(datelist, inst_to_regs)),
-                                    columns=["date","inst_to_regs_conv"])
+installs_count = [reg * conv for (reg, conv) in zip (regs, inst_to_regs)]
+inst_to_regs_conv_df = pd.DataFrame(
+    list(zip(datelist, installs_count, regs)),
+    columns=["date", "installs_count", "regs_count"])
 inst_to_regs_conv_df['weekstart'] = weekstart
 inst_to_regs_conv_df['monthstart'] = monthstart
 
@@ -74,9 +76,8 @@ first_sales_df['monthstart'] = monthstart
 
 
 regs_to_first_sales_conv_df = pd.DataFrame(
-    list(zip(datelist,
-             first_sales_df["first_sales"] / regs_df["regs"])),
-    columns=["date","regs_to_first_sales_conv"])
+    list(zip(datelist, first_sales_df["first_sales"], regs_df["regs"])),
+    columns=["date", "first_sales", "regs"])
 regs_to_first_sales_conv_df['weekstart'] = weekstart
 regs_to_first_sales_conv_df['monthstart'] = monthstart
 
@@ -112,7 +113,8 @@ second_sales_df = pd.DataFrame(list(zip(datelist, second_sales)),
                                    columns=["date", "second_sales"])
 first_sales_to_second_sales_conv_df = pd.DataFrame(
     list(zip(datelist,
-             second_sales_df["second_sales"] / first_sales_df["first_sales"])),
-    columns=["date", "first_sales_to_second_sales_conv"])
+             second_sales_df["second_sales"],
+             first_sales_df["first_sales"])),
+    columns=["date", "second_sales", "first_sales"])
 first_sales_to_second_sales_conv_df['weekstart'] = weekstart
 first_sales_to_second_sales_conv_df['monthstart'] = monthstart

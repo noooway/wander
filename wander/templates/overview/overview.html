@@ -32,15 +32,13 @@
 
     function set_time_period(radio_btn) {
         for(let i = 0; i < plots.length; i++){
-            plot_endpoint_and_div = plots[i];
-
             jQuery.post(
-                '/overview/' + plot_endpoint_and_div,
+                '/overview/' + plots[i],
                 {time_period: radio_btn.value}
             ).done(function(response) {
                 console.log(response)
                 /*use Plotly.restyle instead of Plotly.newPlot*/
-                Plotly.newPlot(plot_endpoint_and_div, JSON.parse(response));
+                Plotly.newPlot(plots[i], JSON.parse(response));
             }).fail(function() {
                 console.log("Can't get data from the server")
             })

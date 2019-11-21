@@ -42,103 +42,161 @@ def overview():
 @bp.route('/overview/revenue', methods=['POST'])
 @login_required
 def revenue_plot():
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
     default_time_period = 'weeks'
-    timeperiod = request.form.get('time_period', default_time_period)
-    print(timeperiod)
-    fig = px.line(current_app.data_sources['revenue'], x="date", y="revenue",
-                  title="Revenue",
-                  labels=dict(date="Date", revenue="Revenue, $"))
-    fig.update_layout(yaxis=dict(scaleanchor="x", scaleratio=0.8))
-    fig.update_traces(mode='markers+lines')
-    #fig.update_layout(width=800)
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['revenue']
+    grouped_df = grouped_df[[time_period, 'revenue']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df["revenue"],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="Revenue")
+    )
     return fig.to_json()
 
 
 @bp.route('/overview/regs', methods=['POST'])
 @login_required
 def regs_plot():
-    fig = px.line(current_app.data_sources['regs'], x="date", y="regs",
-                  title="Registrations",
-                  labels=dict(date="Date", regs="Registrations"))
-    fig.update_traces(mode='markers+lines')
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
+    default_time_period = 'weeks'
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['regs']
+    grouped_df = grouped_df[[time_period, 'regs']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df['regs'],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="Registrations")
+    )
     return fig.to_json()
 
 
 @bp.route('/overview/inst_to_regs_conv', methods=['POST'])
 @login_required
 def inst_to_regs_conv_plot():
-    fig = px.line(current_app.data_sources['inst_to_regs_conv'],
-                  x="date", y="inst_to_regs_conv",
-                  title="Installs to Regs Conversion",
-                  labels=dict(date="Date",
-                              inst_to_regs_conv="Conversion, %"))
-    fig.update_layout(yaxis=dict(tickformat=',.0%',))
-    fig.update_traces(mode='markers+lines')
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
+    default_time_period = 'weeks'
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['inst_to_regs_conv']
+    grouped_df = grouped_df[[time_period, 'installs_count', 'regs_count']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    grouped_df['inst_to_regs_conv'] = \
+        grouped_df['installs_count'] / grouped_df['regs_count']
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df['inst_to_regs_conv'],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="Installs to Regs Conversion",
+                           yaxis=dict(tickformat=',.0%',))
+    )
     return fig.to_json()
 
 
 @bp.route('/overview/first_sales', methods=['POST'])
 @login_required
 def first_sales_plot():
-    fig = px.line(current_app.data_sources['first_sales'],
-                  x="date", y="first_sales",
-                  title="First Sales",
-                  labels=dict(date="Date", first_sales="First Sales"))
-    fig.update_traces(mode='markers+lines')
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
+    default_time_period = 'weeks'
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['first_sales']
+    grouped_df = grouped_df[[time_period, 'first_sales']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df['first_sales'],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="First Sales")
+    )
     return fig.to_json()
 
 
 @bp.route('/overview/regs_to_first_sales_conv', methods=['POST'])
 @login_required
 def regs_to_first_sales_conv_plot():
-    fig = px.line(current_app.data_sources['regs_to_first_sales_conv'],
-                  x="date", y="regs_to_first_sales_conv",
-                  title="Regs to First Sales Conversion",
-                  labels=dict(date="Date",
-                              regs_to_first_sales_conv="Conversion, %"))
-    fig.update_layout(yaxis=dict(tickformat=',.0%',))
-    fig.update_traces(mode='markers+lines')
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
+    default_time_period = 'weeks'
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['regs_to_first_sales_conv']
+    grouped_df = grouped_df[[time_period, 'first_sales', 'regs']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    grouped_df['regs_to_first_sales_conv'] = \
+        grouped_df['first_sales'] / grouped_df['regs']
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df['regs_to_first_sales_conv'],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="Regs to First Sales Conversion",
+                           yaxis=dict(tickformat=',.0%',))
+    )
     return fig.to_json()
 
 
 @bp.route('/overview/sales', methods=['POST'])
 @login_required
 def sales_plot():
-    fig = px.line(current_app.data_sources['sales'],
-                  x="date", y="sales",
-                  title="Sales",
-                  labels=dict(date="Date", sales="Sales"))
-    fig.update_traces(mode='markers+lines')
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
+    default_time_period = 'weeks'
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['sales']
+    grouped_df = grouped_df[[time_period, 'sales']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df['sales'],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="Sales")
+    )
     return fig.to_json()
 
 
 @bp.route('/overview/first_sales_to_second_sales_conv', methods=['POST'])
 @login_required
 def first_sales_to_second_sales_conv_plot():
-    fig = px.line(current_app.data_sources['first_sales_to_second_sales_conv'],
-                  x="date", y="first_sales_to_second_sales_conv",
-                  title="First Sales to Second Sales Conversion",
-                  labels=dict(date="Date",
-                              first_sales_to_second_sales_conv="Conversion, %"))
-    fig.update_layout(yaxis=dict(tickformat=',.0%',))
-    fig.update_traces(mode='markers+lines')
+    time_period_radio_to_col = {'days': 'date',
+                                'weeks': 'weekstart',
+                                'months': 'monthstart'}
+    default_time_period = 'weeks'
+    time_period_radio = request.form.get('time_period', default_time_period)
+    time_period = time_period_radio_to_col[time_period_radio]
+    grouped_df = current_app.data_sources['first_sales_to_second_sales_conv']
+    grouped_df = grouped_df[[time_period, 'second_sales', 'first_sales']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    grouped_df['first_sales_to_second_sales_conv'] = \
+        grouped_df['second_sales'] / grouped_df['first_sales']
+    fig = go.Figure(
+        data = [go.Scatter(x = grouped_df[time_period],
+                           y = grouped_df['first_sales_to_second_sales_conv'],
+                           mode = 'markers+lines')],
+        layout = go.Layout(title="First Sales to Second Sales Conversion",
+                           yaxis=dict(tickformat=',.0%',))
+    )
     return fig.to_json()
-
-
-
-
-# def revenue_plot():
-#     default_count = 500
-#     default_color = 'orange'
-#     count = request.form.get('count', default_count)
-#     col = request.form.get('color', default_color)
-#     xScale = np.linspace(0, 100, count)
-#     yScale = np.random.randn(count)
-#     trace = go.Scatter(
-#         x = xScale,
-#         y = yScale,
-#         line = dict(color=col)
-#     )
-#     data = [trace]
-#     fig = go.Figure(data=data)
-#     return fig.to_json()
