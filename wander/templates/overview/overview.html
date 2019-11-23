@@ -3,6 +3,22 @@
 {% block content %}
 <div id="header">
   <span>
+    <input id="start_date" name="start_date" type="date">
+    -
+    <input id="end_date" name="end_date" type="date">
+  </span>
+  <script>
+    var default_date = new Date();
+    document.getElementById("end_date").valueAsDate = default_date;
+    default_date.setMonth(default_date.getMonth() - 1);
+    document.getElementById("start_date").valueAsDate = default_date;
+  </script>
+  <span>
+    <!--todo: use styles for formatting -->
+    &nbsp;
+    &nbsp;
+  </span>
+  <span>
     <input type="radio" name="timeperiod"
            value="months" onclick="set_time_period(this);"> Months
     <input type="radio" name="timeperiod"
