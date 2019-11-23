@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="header">
+<div class="header">
   <span>
-    <input id="start_date" name="start_date" type="date">
+    <input id="start_date" type="date"
+           onchange="set_all_plots_date_ranges();">
     -
-    <input id="end_date" name="end_date" type="date">
+    <input id="end_date" type="date"
+           onchange="set_all_plots_date_ranges();">
   </span>
   <script>
     var default_date = new Date();
@@ -13,6 +15,30 @@
     default_date.setMonth(default_date.getMonth() - 1);
     document.getElementById("start_date").valueAsDate = default_date;
   </script>
+  <script>
+    function set_date_range(plot_div) {
+        // attach to event on data update
+        // https://plot.ly/javascript/plotlyjs-events/#update-data
+        var start_date = new Date(document.getElementById("start_date").value);
+        var end_date = new Date(document.getElementById("end_date").value);
+        end_date.setDate(end_date.getDate() + 1);
+        var axes_range = {
+            'xaxis.range': [start_date, end_date]
+        };
+        Plotly.relayout(plot_div, axes_range);
+    }
+
+    function set_all_plots_date_ranges(){
+        /* todo: get divs automatically */
+        var plots = ["revenue", "regs", "inst_to_regs_conv",
+                     "first_sales", "regs_to_first_sales_conv",
+                     "sales", "first_sales_to_second_sales_conv"];
+        for(let i = 0; i < plots.length; i++){
+            set_date_range(plots[i]);
+        }
+    }
+  </script>
+
   <span>
     <!--todo: use styles for formatting -->
     &nbsp;
@@ -41,20 +67,20 @@
   </span>
 
   <script>
-    /* todo: get divs automatically */
-    var plots = ["revenue", "regs", "inst_to_regs_conv",
-                 "first_sales", "regs_to_first_sales_conv",
-                 "sales", "first_sales_to_second_sales_conv"];
-
     function set_time_period(radio_btn) {
+        /* todo: get divs automatically */
+        var plots = ["revenue", "regs", "inst_to_regs_conv",
+                     "first_sales", "regs_to_first_sales_conv",
+                     "sales", "first_sales_to_second_sales_conv"];
+
         for(let i = 0; i < plots.length; i++){
             jQuery.post(
                 '/overview/' + plots[i],
                 {time_period: radio_btn.value}
             ).done(function(response) {
-                console.log(response)
-                /*use Plotly.restyle instead of Plotly.newPlot*/
-                Plotly.newPlot(plots[i], JSON.parse(response));
+                // todo: update only data
+                Plotly.react(plots[i], JSON.parse(response));
+                set_date_range(plots[i]);
             }).fail(function() {
                 console.log("Can't get data from the server")
             })
@@ -73,6 +99,8 @@
 <div id="revenue"></div>
 <script>
   Plotly.newPlot("revenue", {{plots.revenue | safe}});
+  //todo: attach to some callback
+  set_date_range("revenue");
 </script>
 
 <div>
@@ -87,6 +115,8 @@
 <script>
   Plotly.newPlot("regs", {{plots.regs | safe}});
   Plotly.newPlot("inst_to_regs_conv", {{plots.inst_to_regs_conv | safe}});
+  set_date_range("regs");
+  set_date_range("inst_to_regs_conv");
 </script>
 
 <div>
@@ -98,6 +128,8 @@
                  {{plots.first_sales | safe}});
   Plotly.newPlot("regs_to_first_sales_conv",
                  {{plots.regs_to_first_sales_conv | safe}});
+  set_date_range("first_sales");
+  set_date_range("regs_to_first_sales_conv");
 </script>
 
 <div>
@@ -108,6 +140,8 @@
   Plotly.newPlot("sales", {{plots.sales | safe}});
   Plotly.newPlot("first_sales_to_second_sales_conv",
                  {{plots.first_sales_to_second_sales_conv | safe}});
+  set_date_range("sales");
+  set_date_range("first_sales_to_second_sales_conv");
 </script>
 
 
