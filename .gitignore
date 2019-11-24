@@ -108,3 +108,4 @@ data_sources
 data_source
 data
 source
+*.db
