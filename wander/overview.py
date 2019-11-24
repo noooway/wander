@@ -8,7 +8,6 @@ from wander.auth import login_required
 import json
 import plotly
 import plotly.graph_objects as go
-import plotly.express as px
 import numpy as np
 
 
