@@ -30,6 +30,7 @@
 
     function set_all_plots_date_ranges(){
         /* todo: get divs automatically */
+        // todo: move into redraw_on_controls_change
         var plots = ["revenue",
                      "installs", "regs", "online",
                      "first_sales", "sales", "virtual_currency_spent",
@@ -48,83 +49,59 @@
     &nbsp;
   </span>
   <span>
-    <input type="radio" name="timeperiod"
-           value="months" onclick="set_time_period(this);"> Months
-    <input type="radio" name="timeperiod"
-           value="weeks" onclick="set_time_period(this);"
+    <input type="radio" name="time_period"
+           value="months" onclick="redraw_on_controls_change(this);"> Months
+    <input type="radio" name="time_period"
+           value="weeks" onclick="redraw_on_controls_change(this);"
            checked="checked"> Weeks
-    <input type="radio" name="timeperiod"
-           value="days" onclick="set_time_period(this);"> Days
+    <input type="radio" name="time_period"
+           value="days" onclick="redraw_on_controls_change(this);"> Days
   </span>
 
   <span style="float:right">
     Region:
     <input type="checkbox" name="region"
-           value="america" onclick="set_region(this);">America
+           value="america" onclick="redraw_on_controls_change(this);">America
     <input type="checkbox" name="region"
-           value="europe" onclick="set_region(this);">Europe
+           value="europe" onclick="redraw_on_controls_change(this);">Europe
     <input type="checkbox" name="region"
-           value="asia" onclick="set_region(this);">Asia
+           value="asia" onclick="redraw_on_controls_change(this);">Asia
     <input type="checkbox" name="region"
-           value="total" onclick="set_region(this);"
+           value="total" onclick="redraw_on_controls_change(this);"
            checked="checked">Total<br>
   </span>
 
   <script>
-    function set_time_period(radio_btn) {
-        /* todo: get divs automatically */
-        var plots = ["revenue",
-                     "installs", "regs", "online",
-                     "first_sales", "sales", "virtual_currency_spent",
-                     "inst_to_regs_conv",
-                     "regs_to_first_sales",
-                     "first_sales_to_second_sales"];
-
-        for(let i = 0; i < plots.length; i++){
-            jQuery.post(
-                '/overview/' + plots[i],
-                {time_period: radio_btn.value}
-            ).done(function(response) {
-                // todo: update only data
-                Plotly.react(plots[i], JSON.parse(response));
-                set_date_range(plots[i]);
-            }).fail(function() {
-                console.log("Can't get data from the server")
-            })
-        }
-    }
-  </script>
-
-  <script>
-    function set_region(region_checkbox) {
-        var checked_boxes = document.querySelectorAll('input[name=region]:checked');
+    function redraw_on_controls_change(btn) {
+        // todo: function collect_controls
+        var checked_region_boxes =
+            document.querySelectorAll('input[name=region]:checked');
         var selected_regions = [];
-        for (var i = 0; i < checked_boxes.length; i++) {
-            selected_regions.push(checked_boxes[i].value);
+        for (var i = 0; i < checked_region_boxes.length; i++) {
+            selected_regions.push(checked_region_boxes[i].value);
         }
-        console.log(selected_regions);
+        //console.log(selected_regions);
         var time_period =
-            document.querySelectorAll('input[name=timeperiod]:checked')[0].value;
-        console.log(time_period);
-
-        var plots = ["regs"];
-
-        for(let i = 0; i < plots.length; i++){
-            jQuery.post(
-                '/overview/' + plots[i],
-                {data: JSON.stringify({time_period: time_period,
-                                       regions: selected_regions})}
-            ).done(function(response) {
+            document.querySelectorAll('input[name=time_period]:checked')[0].value;
+        //console.log(time_period);
+        //
+        var controls = JSON.stringify({time_period: time_period,
+                                       regions: selected_regions})
+        //
+        jQuery.post(
+            '/overview/draw_plots',
+            {controls: controls}
+        ).done(function(response) {
+            for(plot in response){
                 // todo: update only data
-                Plotly.react(plots[i], JSON.parse(response));
-                set_date_range(plots[i]);
-            }).fail(function() {
-                console.log("Can't get data from the server")
-            })
-        }
+                Plotly.react(plot, JSON.parse(response[plot]));
+                set_date_range(plot);
+            }
+        }).fail(function() {
+            console.log("Can't get data from the server")
+        })
     }
   </script>
-
 </div>
 
 <div>
