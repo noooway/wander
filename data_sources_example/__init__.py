@@ -12,14 +12,17 @@ def init_data_sources(app):
 
 def register_dataframes(app):
     app.data_sources['revenue'] = example_data.revenue_df
+    app.data_sources['installs'] = example_data.installs_df
     app.data_sources['regs'] = example_data.regs_df
-    app.data_sources['inst_to_regs_conv'] = example_data.inst_to_regs_conv_df
+    app.data_sources['online'] = example_data.online_df
     app.data_sources['first_sales'] = example_data.first_sales_df
-    app.data_sources['regs_to_first_sales_conv'] = \
-        example_data.regs_to_first_sales_conv_df
     app.data_sources['sales'] = example_data.sales_df
-    app.data_sources['first_sales_to_second_sales_conv'] = \
-        example_data.first_sales_to_second_sales_conv_df
+    app.data_sources['virtual_currency_spent'] = \
+        example_data.virtual_currency_spent_df
+    app.data_sources['regs_to_first_sales'] = \
+        example_data.regs_to_first_sales_df
+    app.data_sources['first_sales_to_second_sales'] = \
+        example_data.first_sales_to_second_sales_df
 
 
 def import_csv(app):
