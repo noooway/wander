@@ -48,15 +48,20 @@ def draw_plots():
 
 def revenue_fig(controls):
     time_period = controls['time_period']
-    grouped_df = group_by_time_period(
-        current_app.data_sources['revenue'],
-        time_period,
-        'revenue')
+    df = current_app.data_sources['revenue']
+    values_col = 'revenue'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['revenue'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = 'Revenue',
+                           legend_orientation = "h",
                            margin = dict(b=0))
     )
     return fig.to_json()
@@ -64,15 +69,20 @@ def revenue_fig(controls):
 
 def installs_fig(controls):
     time_period = controls['time_period']
-    grouped_df = group_by_time_period(
-        current_app.data_sources['installs'],
-        time_period,
-        'installs')
+    df = current_app.data_sources['installs']
+    values_col = 'installs'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['installs'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = "Installs",
+                           legend_orientation = "h",
                            margin = dict(l=0, r=0))
     )
     return fig.to_json()
@@ -80,24 +90,16 @@ def installs_fig(controls):
 
 def regs_fig(controls):
     time_period = controls['time_period']
-    regions = controls['regions']
     df = current_app.data_sources['regs']
-    if 'total' in regions:
-        df = compute_regions_total(df)
-    filtered_df = df[df['region'].isin(regions)]
-    grouped_df = filtered_df[[time_period, 'region', 'regs']]
-    grouped_df = filtered_df.groupby([time_period, 'region']).sum()
-    grouped_df = grouped_df.reset_index()
-    pivoted_df = grouped_df.pivot(index=time_period,
-                                  columns='region',
-                                  values='regs').reset_index()
-    pivoted_df.fillna(0, inplace=True)
+    values_col = 'regs'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
     traces = []
     for col in pivoted_df.columns[1:]:
         traces.append(go.Scatter(x = pivoted_df[time_period],
                                  y = pivoted_df[col],
                                  mode = 'markers+lines',
-                                 name = col))
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
         data = traces,
         layout = go.Layout(title = "Registrations",
@@ -109,15 +111,20 @@ def regs_fig(controls):
 
 def online_fig(controls):
     time_period = controls['time_period']
-    grouped_df = group_by_time_period(
-        current_app.data_sources['online'],
-        time_period,
-        'online')
+    df = current_app.data_sources['online']
+    values_col = 'online'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['online'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = "Online",
+                           legend_orientation = "h",
                            margin = dict(l=0, r=0))
     )
     return fig.to_json()
@@ -125,15 +132,20 @@ def online_fig(controls):
 
 def first_sales_fig(controls):
     time_period = controls['time_period']
-    grouped_df = group_by_time_period(
-        current_app.data_sources['first_sales'],
-        time_period,
-        'first_sales')
+    df = current_app.data_sources['first_sales']
+    values_col = 'first_sales'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['first_sales'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = "First Sales",
+                           legend_orientation = "h",
                            margin = dict(l=0, r=0))
     )
     return fig.to_json()
@@ -141,15 +153,20 @@ def first_sales_fig(controls):
 
 def sales_fig(controls):
     time_period = controls['time_period']
-    grouped_df = group_by_time_period(
-        current_app.data_sources['sales'],
-        time_period,
-        'sales')
+    df = current_app.data_sources['sales']
+    values_col = 'sales'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['sales'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = "Sales",
+                           legend_orientation = "h",
                            margin = dict(l=0, r=0))
     )
     return fig.to_json()
@@ -157,15 +174,20 @@ def sales_fig(controls):
 
 def virtual_currency_spent_fig(controls):
     time_period = controls['time_period']
-    grouped_df = group_by_time_period(
-        current_app.data_sources['virtual_currency_spent'],
-        time_period,
-        'virtual_currency_spent')
+    df = current_app.data_sources['virtual_currency_spent']
+    values_col = 'virtual_currency_spent'
+    pivoted_df = pivot_by_categories(df, controls, values_col)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col,
+                                 line = dict(color = get_linecolor(col))))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['virtual_currency_spent'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = "Virtual Currency Spent",
+                           legend_orientation = "h",
                            margin = dict(l=0, r=0))
     )
     return fig.to_json()
@@ -262,10 +284,10 @@ def group_by_time_period(df, time_period, value_field):
     return grouped_df
 
 
-def compute_regions_total(df):
+def compute_regions_total(df, values_col):
     grouped_df = df
     time_period = 'date'
-    grouped_df = grouped_df[[time_period, 'regs']]
+    grouped_df = grouped_df[[time_period, values_col]]
     grouped_df = grouped_df.groupby(time_period).sum()
     grouped_df = grouped_df.reset_index()
     grouped_df['region'] = 'total'
@@ -274,3 +296,30 @@ def compute_regions_total(df):
     grouped_df['month_start'] = df['month_start'][df['date'] == grouped_df['date']]
     new_df = df.append(grouped_df, sort=True)
     return new_df
+
+
+def pivot_by_categories(df, controls, values_col):
+    time_period = controls['time_period']
+    regions = controls['regions']
+    new_df = df
+    if 'total' in regions:
+        new_df = compute_regions_total(new_df, values_col)
+    filtered_df = new_df[new_df['region'].isin(regions)]
+    grouped_df = filtered_df[[time_period, 'region', values_col]]
+    grouped_df = filtered_df.groupby([time_period, 'region']).sum()
+    grouped_df = grouped_df.reset_index()
+    pivoted_df = grouped_df.pivot(index=time_period,
+                                  columns='region',
+                                  values=values_col).reset_index()
+    pivoted_df.fillna(0, inplace=True)
+    return pivoted_df
+
+
+def get_linecolor(column):
+    colors = {
+        'america': 'red',
+        'europe': 'green',
+        'asia': 'blue',
+        'total': 'orange'
+    }
+    return colors[column]
