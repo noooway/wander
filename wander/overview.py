@@ -81,17 +81,27 @@ def installs_fig(controls):
 def regs_fig(controls):
     time_period = controls['time_period']
     regions = controls['regions']
-    filtered_df = current_app.data_sources['regs']
-
-    grouped_df = group_by_time_period(
-        current_app.data_sources['regs'],
-        time_period,
-        'regs')
+    df = current_app.data_sources['regs']
+    if 'total' in regions:
+        df = compute_regions_total(df)
+    filtered_df = df[df['region'].isin(regions)]
+    grouped_df = filtered_df[[time_period, 'region', 'regs']]
+    grouped_df = filtered_df.groupby([time_period, 'region']).sum()
+    grouped_df = grouped_df.reset_index()
+    pivoted_df = grouped_df.pivot(index=time_period,
+                                  columns='region',
+                                  values='regs').reset_index()
+    pivoted_df.fillna(0, inplace=True)
+    traces = []
+    for col in pivoted_df.columns[1:]:
+        traces.append(go.Scatter(x = pivoted_df[time_period],
+                                 y = pivoted_df[col],
+                                 mode = 'markers+lines',
+                                 name = col))
     fig = go.Figure(
-        data = [go.Scatter(x = grouped_df[time_period],
-                           y = grouped_df['regs'],
-                           mode = 'markers+lines')],
+        data = traces,
         layout = go.Layout(title = "Registrations",
+                           legend_orientation = "h",
                            margin = dict(l=0, r=0))
     )
     return fig.to_json()
@@ -225,7 +235,6 @@ def parse_controls(request):
         'time_period': determine_time_period(control_values),
         'regions': determine_regions(control_values)
     }
-    print(controls)
     return controls
 
 
@@ -251,3 +260,17 @@ def group_by_time_period(df, time_period, value_field):
     grouped_df = grouped_df.groupby(time_period).sum()
     grouped_df = grouped_df.reset_index()
     return grouped_df
+
+
+def compute_regions_total(df):
+    grouped_df = df
+    time_period = 'date'
+    grouped_df = grouped_df[[time_period, 'regs']]
+    grouped_df = grouped_df.groupby(time_period).sum()
+    grouped_df = grouped_df.reset_index()
+    grouped_df['region'] = 'total'
+    grouped_df['platform'] = None
+    grouped_df['week_start'] = df['week_start'][df['date'] == grouped_df['date']]
+    grouped_df['month_start'] = df['month_start'][df['date'] == grouped_df['date']]
+    new_df = df.append(grouped_df, sort=True)
+    return new_df

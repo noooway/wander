@@ -80,10 +80,10 @@
         for (var i = 0; i < checked_region_boxes.length; i++) {
             selected_regions.push(checked_region_boxes[i].value);
         }
-        console.log(selected_regions);
+        //console.log(selected_regions);
         var time_period =
             document.querySelectorAll('input[name=time_period]:checked')[0].value;
-        console.log(time_period);
+        //console.log(time_period);
         //
         var controls = JSON.stringify({time_period: time_period,
                                        regions: selected_regions})
