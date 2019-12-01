@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table style="width:100%; text-align: left;">
+  <tr>
+    <th>Date</th>
+    <th>Version</th>
+    <th>Description</th>
+  </tr>
+  {% for rel in releases %}
+  <tr>
+    <td>{{ rel['date'] }}</td>
+    <td>{{ rel['version'] }}</td>
+    <td>{{ rel['description'] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

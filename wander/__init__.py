@@ -5,6 +5,7 @@ from . import db
 from . import auth
 from . import overview
 from . import retention
+from . import releases
 
 # works when project is started with 'flask run' from top-level dir
 import data_sources_example
@@ -31,6 +32,7 @@ def create_app(test_config=None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(overview.bp)
     app.register_blueprint(retention.bp)
+    app.register_blueprint(releases.bp)
     app.add_url_rule('/', endpoint='overview.overview')
 
     data_sources_example.init_data_sources(app)

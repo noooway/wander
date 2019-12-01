@@ -1,3 +1,4 @@
+import json
 import sqlite3
 import pandas as pd
 from . import example_data
@@ -8,6 +9,7 @@ def init_data_sources(app):
     register_dataframes(app)
     #import_csv(app)
     import_from_db(app)
+    load_releases_info(app)
 
 
 def register_dataframes(app):
@@ -47,3 +49,10 @@ def import_from_db(app):
     df = pd.read_sql_query(cohort_purchases_sql, db_conn)
     app.data_sources['regs_purchases'] = df
     db_conn.close()
+
+
+def load_releases_info(app):
+    releases_path = './data_sources_example/releases.json'
+    with open(releases_path, 'r') as f:
+        releases = json.load(f)
+    app.data_sources['releases'] = releases['releases']

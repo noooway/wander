@@ -1,0 +1,22 @@
+{
+  "releases": [
+      { "date": "2019-11-28",
+        "version": "0.3",
+        "description": "Improved Onboarding"},
+      { "date": "2019-11-17",
+        "version": "0.21",
+        "description": "Analytics fix"},
+      { "date": "2019-11-05",
+        "version": "0.2",
+        "description": "New functionality"},
+      { "date": "2019-10-23",
+        "version": "0.12",
+        "description": "Translation"},
+      { "date": "2019-10-10",
+        "version": "0.11",
+        "description": "Registration bugfix"},
+      { "date": "2019-10-01",
+        "version": "0.1",
+        "description": "Initial Release"}
+  ]
+}
