@@ -72,8 +72,7 @@
   </span>
 
   <script>
-    function redraw_on_controls_change(btn) {
-        // todo: function collect_controls
+    function get_control_values(){
         var checked_region_boxes =
             document.querySelectorAll('input[name=region]:checked');
         var selected_regions = [];
@@ -85,9 +84,12 @@
             document.querySelectorAll('input[name=time_period]:checked')[0].value;
         //console.log(time_period);
         //
-        var controls = JSON.stringify({time_period: time_period,
-                                       regions: selected_regions})
-        //
+        return JSON.stringify({time_period: time_period,
+                               regions: selected_regions});
+    }
+
+    function redraw_on_controls_change(btn) {
+        var controls = get_control_values()
         jQuery.post(
             '/overview/draw_plots',
             {controls: controls}
@@ -95,7 +97,7 @@
             for(plot in response){
                 // todo: update only data
                 Plotly.react(plot, JSON.parse(response[plot]));
-                set_date_range(plot);
+                set_date_range(plot); //todo: move on server
             }
         }).fail(function() {
             console.log("Can't get data from the server")
