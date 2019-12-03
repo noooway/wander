@@ -64,8 +64,10 @@ def load_releases_info(app):
 def init_datasource_with_update(app):
     app.data_sources['updated'] = None
     data_lock = threading.Lock()
+    #todo: pass app or app.data_sources?
+    #or pointer to element in app.data_sources?
     update_thread = threading.Thread(target=update_datasource,
-                              args=(app.data_sources['updated'], data_lock))
+                              args=(app.data_sources, data_lock))
     # don't care much about proper exit for now;
     # don't forget to put connection timeout
     #todo: create table; drop on termination
@@ -74,7 +76,7 @@ def init_datasource_with_update(app):
     update_thread.start()
 
 
-def update_datasource(common_data, lock):
+def update_datasource(data_sources, lock):
     db_path = './data_sources_example/regs_pur.db'
     update_sql = 'INSERT INTO updated VALUES (?);'
     select_sql = 'SELECT * FROM updated;'
@@ -90,13 +92,11 @@ def update_datasource(common_data, lock):
         )
         cur = db_conn.cursor()
         for n in range(5):
-            #print(n * counter)
             cur.execute(update_sql, [n * counter])
         db_conn.commit()
         with lock:
-            df = pd.read_sql_query(select_sql, db_conn)
-            common_data = df
-            print(common_data)
+            data_sources['updated'] = pd.read_sql_query(select_sql, db_conn)
+            print(data_sources['updated'])
         db_conn.close()
         counter = counter + 1
         time.sleep(update_approx_every -
