@@ -91,45 +91,38 @@ def update_datasource(data_sources, lock):
     cur = db_conn.cursor()
     cur.execute(del_table_sql)
     cur.execute(create_sql)
+    cur.execute(update_sql, [100])
     db_conn.commit()
     #
-    run_approx_every = 15.0
-    counter = 5
-    update_at_minutes = [1, 3]
-    n_of_retries = 5
-    retry_delay = 15
-    wake_every = 30
+    update_at_minutes = [1, 2, 3, 5, 7, 8, 9]
+    wake_every = 10
+    already_updated = False
     while True:
-        current_minute = datetime.datetime.now().minute
+        current_minute = datetime.datetime.now().minute % 10
         if current_minute in update_at_minutes and not already_updated:
-            status = None
-            for n in range(n_of_retries):
-                # todo: check conn successfull
-                # todo: put connection timeout
-                status = False
-                db_conn = sqlite3.connect(
-                    db_path,
-                    detect_types=sqlite3.PARSE_DECLTYPES
-                )
-                cur = db_conn.cursor()
-                for n in range(5):
-                    cur.execute(update_sql, [n * counter])
-                    db_conn.commit()
-                with lock:
-                    data_sources['updated'] = pd.read_sql_query(select_sql, db_conn)
-                    print(data_sources['updated'])
-                    status = True
-                db_conn.close()
-                counter = counter + 1
-                #
-                if status:
-                    already_updated = True
-                    break
-                else:
-                    sleep(retry_delay)
+            # todo: check conn successful
+            # todo: put connection timeout
+            print(datetime.datetime.now())
+            db_conn = sqlite3.connect(
+                db_path,
+                detect_types=sqlite3.PARSE_DECLTYPES
+            )
+            cur = db_conn.cursor()
+            cur.execute(update_sql, [float(current_minute)])
+            db_conn.commit()
+            with lock:
+                data_sources['updated'] = pd.read_sql_query(select_sql, db_conn)
+                print('in update')
+                print(data_sources['updated'])
+                already_updated = True
+                update_time = datetime.datetime.now()
+            db_conn.close()
+            time.sleep(wake_every)
         else:
-            already_updated = False
-            sleep(wake_every)
+            # todo: may execute several times in the same minute
+            if datetime.datetime.now().minute != update_time.minute:
+                already_updated = False
+            time.sleep(wake_every)
     db_conn = sqlite3.connect(
         db_path,
         detect_types=sqlite3.PARSE_DECLTYPES
