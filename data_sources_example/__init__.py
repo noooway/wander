@@ -73,11 +73,16 @@ def init_datasource_with_update(app):
     # don't forget to put connection timeout
     #todo: create table; drop on termination
     #test termination
+    print("before init", threading.get_ident(), datetime.datetime.now())
+    print('thread count', threading.active_count())
+    #todo: in debug mode flask starts two threads
     update_thread.setDaemon(True)
     update_thread.start()
 
 
 def update_datasource(data_sources, lock):
+    print('started update thread')
+    print('thread count', threading.active_count())
     db_path = './data_sources_example/regs_pur.db'
     del_table_sql = 'DROP TABLE IF EXISTS updated;'
     create_sql = 'CREATE TABLE updated (vals REAL);'
@@ -96,13 +101,13 @@ def update_datasource(data_sources, lock):
     #
     update_at_minutes = [1, 2, 3, 5, 7, 8, 9]
     wake_every = 10
-    already_updated = False
+    #already_updated = False
     while True:
         current_minute = datetime.datetime.now().minute % 10
-        if current_minute in update_at_minutes and not already_updated:
+        if current_minute in update_at_minutes:
             # todo: check conn successful
             # todo: put connection timeout
-            print(datetime.datetime.now())
+            print(threading.get_ident(), datetime.datetime.now())
             db_conn = sqlite3.connect(
                 db_path,
                 detect_types=sqlite3.PARSE_DECLTYPES
@@ -114,14 +119,15 @@ def update_datasource(data_sources, lock):
                 data_sources['updated'] = pd.read_sql_query(select_sql, db_conn)
                 print('in update')
                 print(data_sources['updated'])
-                already_updated = True
                 update_time = datetime.datetime.now()
             db_conn.close()
-            time.sleep(wake_every)
+            next_minute = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            next_minute.replace(second = 0)
+            secs_to_sleep = (next_minute - update_time).total_seconds()
+            print(secs_to_sleep)
+            time.sleep(secs_to_sleep)
         else:
-            # todo: may execute several times in the same minute
-            if datetime.datetime.now().minute != update_time.minute:
-                already_updated = False
+            print("else", threading.get_ident(), datetime.datetime.now())
             time.sleep(wake_every)
     db_conn = sqlite3.connect(
         db_path,
