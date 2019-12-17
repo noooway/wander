@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+  <span>
+    <input id="start_date" type="date"
+           onchange="set_all_plots_date_ranges();">
+    -
+    <input id="end_date" type="date"
+           onchange="set_all_plots_date_ranges();">
+  </span>
+  <script>
+    var default_date = new Date();
+    document.getElementById("end_date").valueAsDate = default_date;
+    default_date.setMonth(default_date.getMonth() - 1);
+    document.getElementById("start_date").valueAsDate = default_date;
+  </script>
+  <script>
+    function set_date_range(plot_div) {
+        // attach to event on data update
+        // https://plot.ly/javascript/plotlyjs-events/#update-data
+        var start_date = new Date(document.getElementById("start_date").value);
+        var end_date = new Date(document.getElementById("end_date").value);
+        end_date.setDate(end_date.getDate() + 1);
+        var axes_range = {
+            'xaxis.range': [start_date, end_date]
+        };
+        Plotly.relayout(plot_div, axes_range);
+    }
+
+    function set_all_plots_date_ranges(){
+        /* todo: get divs automatically */
+        // todo: move into redraw_on_controls_change
+        var plots = ["revenue",
+                     "installs", "regs", "online",
+                     "first_sales", "sales", "virtual_currency_spent",
+                     "inst_to_regs_conv",
+                     "regs_to_first_sales",
+                     "first_sales_to_second_sales"];
+        for(let i = 0; i < plots.length; i++){
+            set_date_range(plots[i]);
+        }
+    }
+  </script>
+
+  <span>
+    <!--todo: use styles for formatting -->
+    &nbsp;
+    &nbsp;
+  </span>
+  <span>
+    <input type="radio" name="time_period"
+           value="months" onclick="redraw_on_controls_change(this);"> Months
+    <input type="radio" name="time_period"
+           value="weeks" onclick="redraw_on_controls_change(this);"
+           checked="checked"> Weeks
+    <input type="radio" name="time_period"
+           value="days" onclick="redraw_on_controls_change(this);"> Days
+  </span>
+
+  <span style="float:right">
+    Region:
+    <input type="checkbox" name="region"
+           value="america" onclick="redraw_on_controls_change(this);">America
+    <input type="checkbox" name="region"
+           value="europe" onclick="redraw_on_controls_change(this);">Europe
+    <input type="checkbox" name="region"
+           value="asia" onclick="redraw_on_controls_change(this);">Asia
+    <input type="checkbox" name="region"
+           value="total" onclick="redraw_on_controls_change(this);"
+           checked="checked">Total<br>
+  </span>
+
+  <script>
+    function get_control_values(){
+        var checked_region_boxes =
+            document.querySelectorAll('input[name=region]:checked');
+        var selected_regions = [];
+        for (var i = 0; i < checked_region_boxes.length; i++) {
+            selected_regions.push(checked_region_boxes[i].value);
+        }
+        //console.log(selected_regions);
+        var time_period =
+            document.querySelectorAll('input[name=time_period]:checked')[0].value;
+        //console.log(time_period);
+        //
+        return JSON.stringify({time_period: time_period,
+                               regions: selected_regions});
+    }
+
+    function redraw_on_controls_change(btn) {
+        var controls = get_control_values()
+        jQuery.post(
+            '/ab_tests/draw_plots',
+            {controls: controls}
+        ).done(function(response) {
+            for(plot in response){
+                // todo: update only data
+                Plotly.react(plot, JSON.parse(response[plot]));
+                set_date_range(plot); //todo: move on server
+            }
+        }).fail(function() {
+            console.log("Can't get data from the server")
+        })
+    }
+  </script>
+</div>
+
+<div>
+  <!-- Use CSS instead of space-formatting -->
+  <br>
+  <br>
+  <br>
+</div>
+
+<div id="revenue"></div>
+<script>
+  Plotly.newPlot("revenue", {{plots.revenue | safe}});
+  //todo: attach to some callback
+  set_date_range("revenue");
+</script>
+
+<div>
+  <!-- Use CSS instead of space-formatting -->
+  <br>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; justify-content:space-between;">
+  <!-- todo: use loop ; move styles to css -->
+  <div id="installs" style="width:32%;"></div>
+  <div id="regs" style="width:32%;"></div>
+  <div id="online" style="width:32%;"></div>
+  <div id="first_sales" style="width:32%;"></div>
+  <div id="sales" style="width:32%;"></div>
+  <div id="virtual_currency_spent" style="width:32%;"></div>
+</div>
+<script>
+  Plotly.newPlot("installs", {{plots.installs | safe}});
+  Plotly.newPlot("regs", {{plots.regs | safe}});
+  Plotly.newPlot("online", {{plots.online | safe}});
+  Plotly.newPlot("first_sales", {{plots.first_sales | safe}});
+  Plotly.newPlot("sales", {{plots.sales | safe}});
+  Plotly.newPlot("virtual_currency_spent", {{plots.virtual_currency_spent | safe}});
+  set_date_range("installs");
+  set_date_range("regs");
+  set_date_range("online");
+  set_date_range("first_sales");
+  set_date_range("sales");
+  set_date_range("virtual_currency_spent");
+</script>
+
+<div>
+  <!-- Use CSS instead of space-formatting -->
+  <br>
+  <br>
+  <br>
+</div>
+
+
+
+<div style="display:flex; flex-wrap:wrap; justify-content:space-evenly;">
+  <div id="regs_to_first_sales" style="width:32%;"></div>
+  <div id="first_sales_to_second_sales" style="width:32%;"></div>
+</div>
+<script>
+  Plotly.newPlot("regs_to_first_sales",
+                 {{plots.regs_to_first_sales | safe}});
+  Plotly.newPlot("first_sales_to_second_sales",
+                 {{plots.first_sales_to_second_sales | safe}});
+  set_date_range("regs_to_first_sales");
+  set_date_range("first_sales_to_second_sales");
+</script>
+
+
+{% endblock %}
