@@ -2,7 +2,7 @@
 Mobile app analytics dashboard
 
 <p align="center">
-    <a href="https://ibb.co/NLxdJrz">
+    <a href="https://ibb.co/JRHWZJK">
        <img src="https://i.ibb.co/vxkC9nH/wander-v01.png" width="500"/>
     </a>
 </p>
